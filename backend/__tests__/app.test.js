@@ -37,8 +37,12 @@ const createMockApp = () => {
 
   // Test suites endpoint
   app.get('/api/v1/test-suites', async (req, res) => {
-    const suites = await prismaService.client.testSuite.findMany();
-    res.json({ success: true, data: suites });
+    try {
+      const suites = await prismaService.client.testSuite.findMany();
+      res.json({ success: true, data: suites });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
   });
 
   return app;

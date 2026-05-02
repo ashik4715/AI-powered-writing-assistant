@@ -1,78 +1,348 @@
-# Technical Take-Home Assignment: Quality Engineering Lead (AI/ML Domain)
+# Testing AI Products Take-Home Exercise
 
-## Introduction
-As a Lead Quality Engineer for an AI-powered product, you are tasked with designing and executing a comprehensive test strategy for a new feature release. This assignment evaluates your ability to critically assess AI systems, blending traditional software quality principles with the nuances of probabilistic AI/ML components.
+## Mid-to-Senior AI Quality Engineer Assessment
 
-## Scenario Brief
-You are the Lead Quality Engineer for **CodeSage**, an AI-integrated IDE that provides real-time code suggestions, refactoring assistance, and automated documentation generation using a fine-tuned Large Language Model (LLM). The upcoming release (v2.1) introduces a new "Context-Aware Code Explainer" feature that leverages Retrieval-Augmented Generation (RAG) to explain complex code snippets in natural language, drawing from the project's codebase and external documentation.
+### Purpose
 
-Your mission is to design a test strategy for this feature, considering both functional correctness and AI-specific quality dimensions. You have 4 hours to complete this assignment.
+This take-home exercise evaluates a candidate's ability to design, execute, and communicate a professional quality strategy for an AI-powered product. The assessment is intended for Mid-to-Senior Quality Engineers working with LLM, RAG, and probabilistic AI systems.
 
-## Standardized Assessment Rubric
-Your submission will be evaluated across four weighted categories. Each category has defined criteria for "Exceeds Expectations" (Senior level) and "Meets Expectations" (Mid level).
+The expected submission should demonstrate both traditional software quality discipline and AI-specific evaluation judgment. Strong responses will clearly distinguish deterministic testing from probabilistic testing, define measurable quality thresholds, and communicate risk in a way that product, engineering, and leadership stakeholders can act on.
 
-| Category | Weight | Exceeds Expectations (Senior) | Meets Expectations (Mid) |
-| :--- | :--- | :--- | :--- |
-| **Strategy** | 25% | Demonstrates sophisticated risk-based testing (RBT) approach, prioritizes tests based on business impact and failure likelihood, defines clear entry/exit criteria, and integrates AI-specific risk factors (e.g., data drift, prompt injection) into the test plan. Shows evidence of considering edge cases unique to RAG systems (e.g., retrieval relevance, context window limits). | Presents a coherent test plan covering functional and non-functional aspects. Identifies basic risks but may lack depth in AI-specific prioritization or formal RBT methodology. Entry/exit criteria are present but may be vague. |
-| **Execution** | 30% | Proposes a detailed, actionable test design that includes specific techniques for evaluating probabilistic outputs (e.g., statistical significance testing, distributional analysis). Clearly delineates between deterministic and AI components, specifying appropriate oracle strategies for each (e.g., assertions vs. similarity metrics). Includes a traceability matrix linking requirements, risks, and test cases. | Provides a reasonable test design with a mix of test types. Attempts to distinguish between deterministic and AI components but may lack specificity in oracle techniques or statistical approaches. Traceability is present but may be incomplete or inconsistent. |
-| **AI-Specific Nuance** | 30% | Explicitly addresses core AI challenges: hallucination (with mitigation strategies), sycophancy (bias towards user intent), semantic drift (over turns), latency metrics (TTFT/TPOT), and guardrail efficacy (safety, toxicity, bias). Proposes concrete measurement techniques and acceptable thresholds for each. Demonstrates understanding of how these metrics interrelate and impact user experience. | Identifies most AI challenges but may lack depth in proposed solutions or measurement techniques. Addresses hallucination and latency but may overlook sycophancy, semantic drift, or guardrail nuances. Thresholds, if proposed, may not be well-justified. |
-| **Communication** | 15% | Submission is exceptionally well-structured, professional, and concise. Uses clear headings, bullet points, and visual aids (if applicable) to enhance readability. Language is precise, free of jargon unless explained, and tailored to a technical leadership audience. Deliverables are self-explanatory and require minimal follow-up. | Submission is organized and understandable. May have minor sections that are overly verbose or lack clarity. Language is generally professional but may contain occasional ambiguities or inconsistencies in tone. |
+### Timebox
 
-## Advanced Technical Requirements
-Your test strategy must explicitly address the following:
-
-1.  **Probabilistic vs. Deterministic Evaluation:** Clearly separate testing approaches for the deterministic components (e.g., UI interactions, API contracts, data pipeline) from the probabilistic LLM/RAG components. Specify appropriate oracle strategies for each (e.g., exact match/assertions for deterministic; semantic similarity, BLEU/ROUGE, or LLM-as-a-Judge for probabilistic).
-2.  **AI-Specific Challenges:** Define how you will measure and mitigate:
-    *   **Hallucination Rate:** Percentage of generated explanations containing factually incorrect information relative to the source code or retrieved context.
-    *   **Sycophancy:** Tendency of the model to align with perceived user bias or incorrect assumptions in the prompt (e.g., agreeing with a false premise about the code's purpose).
-    *   **Semantic Drift:** Degradation in explanation quality or relevance over extended interactions or session length.
-    *   **Latency:** Measure Time to First Token (TTFT) and Time Per Output Token (TPOT) under varying load and context sizes.
-    *   **Guardrail Efficacy:** Effectiveness of safety filters in preventing harmful, biased, or non-compliant outputs (e.g., refusing to explain malicious code, avoiding generation of copyrighted text verbatim).
-3.  **Tooling & Methodology:** Discuss how you would leverage:
-    *   **Evals Frameworks:** Reference specific tools like RAGAS (for faithfulness, answer relevancy), DeepEval, or LangSmith for evaluating RAG pipeline components.
-    *   **Automated Model-Based Testing:** Conceptually describe how you might generate test prompts based on code complexity metrics or coverage goals.
-    *   **LLM-as-a-Judge:** Explain the concept and propose its use for evaluating subjective qualities like explanation clarity, coherence, or adherence to style guidelines, including considerations for bias and consistency.
-
-## Sophisticated Deliverables
-Submit a single document (markdown or PDF) containing the following sections, using the provided templates where specified:
-
-### 1. Strategic Test Plan
-*   **Objective & Scope:** Clearly state the goal of the testing effort and what is/in-scope for v2.1.
-*   **Risk-Based Testing (RBT) Approach:** Identify top 5 risks (mix of traditional and AI-specific), their likelihood, impact, and proposed mitigation/test emphasis.
-*   **Test Levels & Types:** Outline the testing pyramid (unit, integration, system, acceptance) and specify types (functional, non-functional, AI-output quality) for each level.
-*   **Traceability Matrix:** Provide a table linking:
-    *   Requirement ID (e.g., REQ-EXPLAIN-001: "System shall explain code snippets accurately")
-    *   Associated Risk(s)
-    *   Test Case ID(s)
-    *   Test Type
-    *   Oracle Type (Deterministic/Probabilistic)
-*   **Entry & Exit Criteria:** Define measurable conditions for starting and stopping testing (e.g., exit criteria: hallucination rate < 5%, TTFT < 1.5s, no critical guardrail failures).
-
-### 2. Analytical Defect Report Template
-*   **Note:** You are not required to find actual defects, but to provide a template for reporting them that distinguishes between traditional and AI bugs.
-*   **Template Structure:**
-    *   **Defect ID:**
-    *   **Title:**
-    *   **Component:** (e.g., UI, Prompt Construction, RAG Retrieval, LLM Inference, Guardrails)
-    *   **Type:** [Functional Defect] or [Probabilistic/AI-Quality Defect]
-    *   **Severity:** (Standard: Critical, High, Medium, Low) - *for Functional Defects*
-    *   **Confidence/Reliability Impact:** (e.g., High Hallucination Risk, Latency Degradation, Guardrail Bypass) - *for AI-Quality Defects*
-    *   **Steps to Reproduce:**
-    *   **Expected vs. Actual:** (For Functional: clear pass/fail. For AI-Quality: describe the deviation in terms of metrics, e.g., "Explanation contained 2 factual inaccuracies where 0 were expected").
-    *   **Logs/Data:** (Include relevant prompts, retrieved context, model parameters, latency metrics).
-    *   **Proposed Fix/Mitigation:**
-
-### 3. Post-Mortem/Reflective Analysis
-*   **Transition Challenges:** Briefly discuss the key challenges in shifting from traditional assertion-based testing to distributional/semantic evaluation for AI components.
-*   **Metric Selection Rationale:** Justify why the chosen AI metrics (hallucination rate, TTFT, etc.) are indicative of user experience and product quality.
-*   **Lessons Learned / Recommendations:** Offer one actionable insight for improving the QE process for future AI feature releases based on this exercise.
-
-## Instructions & Constraints
-*   **Timebox:** This assignment is designed to be completed within **4 hours**. Manage your time accordingly across planning, writing, and review.
-*   **Format:** Submit a single, well-organized document (Markdown preferred, PDF acceptable). Use clear headings, bullet points, and tables to enhance readability.
-*   **Assumptions:** Clearly state any assumptions you make about the CodeSage product, architecture, or release v2.1 (e.g., model size, deployment environment, team structure).
-*   **Originality:** While you may reference public frameworks and methodologies, the specific application to the CodeSage scenario and the structure of your deliverables should reflect your own analytical thinking.
-*   **Submission:** Place your completed file in the root of this repository as `SOLUTION.md` (or submit via the designated channel if instructed otherwise).
+The assignment is designed to be completed in 3 to 4 hours. Candidates should prioritize depth of reasoning, defensible assumptions, and high-signal artifacts over exhaustive coverage.
 
 ---
-**End of Assignment**
+
+## Scenario
+
+You are the Quality Engineer responsible for assessing a new release of **CodeSage**, an AI-integrated IDE assistant that provides real-time code suggestions, refactoring guidance, and automated documentation support.
+
+The upcoming release, **CodeSage v2.1**, introduces a **Context-Aware Code Explainer** feature. The feature uses a Large Language Model with Retrieval-Augmented Generation to explain complex code snippets in natural language. It may draw context from the local codebase, project documentation, dependency metadata, and external technical references.
+
+Your task is to produce a professional test strategy and execution package for this release.
+
+---
+
+## Core Objective
+
+Design and document a testing approach that evaluates whether the Context-Aware Code Explainer is ready for controlled release. Your submission must address functional correctness, non-functional quality, and AI-specific output risks.
+
+The core intent is not to create a large test inventory. The goal is to show how you reason about quality when the system includes both deterministic software components and probabilistic model behavior.
+
+---
+
+## Assessment Phases
+
+### Phase 1: Strategy
+
+Define the system under test, intended users, scope boundaries, assumptions, and release risks.
+
+Your strategy should include:
+
+- In-scope and out-of-scope behavior for CodeSage v2.1.
+- Key user workflows and failure modes.
+- A risk-based testing approach covering both traditional and AI-specific risks.
+- Entry and exit criteria with measurable thresholds.
+- A traceability matrix linking requirements, risks, tests, and oracle types.
+
+### Phase 2: Execution
+
+Create and document a representative test set across functional, non-functional, and AI-specific categories.
+
+Your execution artifacts should include:
+
+- Test cases with prompts, setup data, expected behavior, observed behavior, verdict, severity, and notes.
+- Clear distinction between exact assertions and statistical or semantic evaluation.
+- Evidence of how repeatability, model variability, and evaluator bias are handled.
+- A concise defect list with severity and business impact.
+
+### Phase 3: Analysis
+
+Analyze the results and provide a release recommendation.
+
+Your analysis should include:
+
+- Key findings grouped by category.
+- A risk matrix with likelihood, impact, detectability, and mitigation.
+- A defect severity taxonomy tailored for both functional and AI-quality failures.
+- Root cause analysis for the most important defects.
+- Recommendations for release gating, remediation, monitoring, and automation.
+
+---
+
+## Required Evaluation Concepts
+
+### Deterministic Testing
+
+Deterministic testing applies when the expected result can be evaluated with stable, exact, or rule-based assertions.
+
+Examples:
+
+- API contract validation.
+- Schema and JSON shape checks.
+- UI workflow behavior.
+- Authentication and authorization behavior.
+- Database persistence.
+- Export file format correctness.
+- Prompt assembly rules where the generated prompt can be inspected directly.
+
+Expected oracle examples:
+
+- Exact match.
+- Boolean condition.
+- Schema validation.
+- Snapshot comparison.
+- State transition assertion.
+- Latency threshold for a bounded non-model service.
+
+### Probabilistic Testing
+
+Probabilistic testing applies when the system output can vary across runs while still being acceptable. LLM and RAG outputs require evaluation through semantic, statistical, or judgment-based methods rather than exact string matching alone.
+
+Examples:
+
+- Explanation correctness.
+- Factual faithfulness to retrieved context.
+- Helpfulness and clarity.
+- Hallucination resistance.
+- Sycophancy resistance.
+- Safety refusal behavior.
+- Multi-turn semantic consistency.
+
+Expected oracle examples:
+
+- Semantic similarity using embeddings or cosine similarity.
+- Faithfulness and answer relevancy scoring through RAGAS, DeepEval, or equivalent tools.
+- LLM-as-a-judge scoring with calibrated rubrics and spot-checked human review.
+- Perplexity or distributional checks where appropriate for regression detection.
+- Repeated-run evaluation with confidence intervals.
+- Majority voting or semantic clustering across multiple outputs.
+
+Candidates should explicitly state where deterministic assertions are sufficient and where probabilistic evaluation is required.
+
+---
+
+## Required Test Coverage
+
+### Functional Testing
+
+Cover core product behavior, including:
+
+- Code explanation for simple and complex snippets.
+- Context retrieval from relevant project files.
+- Handling of ambiguous prompts.
+- Multi-turn context retention.
+- Error handling for missing or unavailable context.
+- Output format compliance when a structure is requested.
+
+### Non-Functional Testing
+
+Define measurable system quality targets. Include realistic thresholds and explain why they matter.
+
+At minimum, address:
+
+- P50, P95, and P99 latency for short, medium, and long context prompts.
+- Time to First Token.
+- Time Per Output Token.
+- Tokens per second.
+- Throughput under concurrent usage.
+- Error rate and retry behavior.
+- Cost per request or cost per 1,000 explanations.
+- Context size impact on latency and quality.
+- Availability and graceful degradation when retrieval or model services fail.
+
+### AI Output Quality Testing
+
+Evaluate whether the model output is correct, useful, grounded, and stable.
+
+At minimum, address:
+
+- Factual accuracy against source code and retrieved context.
+- Faithfulness to retrieved documents.
+- Hallucination rate.
+- Semantic similarity to expert-written reference answers.
+- Explanation clarity and concision.
+- Output completeness.
+- Contradiction detection.
+- Perplexity or distribution shift signals where useful for regression monitoring.
+- LLM-as-a-judge methodology, including judge prompt design, scoring scale, calibration, and bias checks.
+- Repeated-run variability and confidence intervals.
+
+### Safety, Bias, and Red Teaming
+
+Evaluate the system's resistance to harmful, biased, or non-compliant behavior.
+
+At minimum, address:
+
+- Prompt injection attempts against retrieval context.
+- False-premise prompts that encourage sycophancy.
+- Requests to explain or improve malicious code.
+- Requests to expose secrets, keys, credentials, or private repository data.
+- Copyright-sensitive requests and verbatim code reproduction risk.
+- Bias in examples, recommendations, or assumptions about users.
+- Jailbreak and role-play attempts.
+- Multi-turn escalation where a benign conversation becomes unsafe.
+- Red team test design, attack categories, severity model, and reproducibility evidence.
+
+---
+
+## Deliverables
+
+Submit a single polished document in Markdown or PDF. The document must be standalone and understandable without additional explanation.
+
+### 1. Strategic Test Plan
+
+Include:
+
+- Objective and scope.
+- System assumptions.
+- Test levels and test types.
+- Risk-based testing approach.
+- Entry and exit criteria.
+- Traceability matrix.
+
+### 2. Test Case Log
+
+Include a structured table with:
+
+- Test case ID.
+- Category.
+- Requirement or risk covered.
+- Prompt or input.
+- Test data or setup.
+- Oracle type: deterministic or probabilistic.
+- Expected behavior.
+- Actual behavior.
+- Result: pass, fail, partial, blocked.
+- Severity or reliability impact.
+- Notes and evidence.
+
+### 3. Risk Matrix
+
+Include:
+
+- Risk ID.
+- Risk description.
+- Impact.
+- Likelihood.
+- Detectability.
+- Risk score.
+- Test coverage.
+- Mitigation.
+- Release gate recommendation.
+
+### 4. Defect Report and Severity Taxonomy
+
+Include a defect list and define how severity is assigned.
+
+For deterministic defects, severity should consider user impact, data impact, security impact, and reproducibility.
+
+For AI-quality defects, severity should also consider:
+
+- Hallucination risk.
+- Safety or compliance exposure.
+- User trust impact.
+- Confidence degradation.
+- Model variability.
+- Frequency across repeated runs.
+- Detectability by users or downstream systems.
+
+### 5. Root Cause Analysis Framework
+
+For the most important defects, provide a concise RCA using a clear framework such as:
+
+- Symptom.
+- Triggering condition.
+- Suspected component: retrieval, prompt construction, model inference, guardrail, post-processing, UI, API, or data pipeline.
+- Evidence.
+- Root cause hypothesis.
+- Corrective action.
+- Preventive action.
+- Owner and validation method.
+
+### 6. Findings Report and Release Recommendation
+
+Include:
+
+- Executive summary.
+- Category-level findings.
+- Critical defects.
+- Residual risks.
+- Go, no-go, or conditional-go recommendation.
+- Monitoring and rollback recommendations.
+
+### 7. Reflective Analysis
+
+Include:
+
+- How AI testing differs from traditional QA.
+- Where deterministic testing was sufficient.
+- Where probabilistic testing was required.
+- Hardest tradeoff in the exercise.
+- What you would automate next and why.
+
+### 8. Optional Automation Proposal
+
+This section is encouraged for senior candidates.
+
+Include:
+
+- Target workflow for automation.
+- Tooling recommendation.
+- Dataset or golden-set strategy.
+- Evaluation metrics.
+- Handling of non-deterministic outputs.
+- CI/CD integration plan.
+- Human review escalation path.
+
+---
+
+## Suggested Document Structure
+
+1. Executive Summary
+2. Assumptions and Scope
+3. Phase 1: Strategy
+4. Phase 2: Execution
+5. Phase 3: Analysis
+6. Risk Matrix
+7. Defect Severity Taxonomy
+8. Root Cause Analysis
+9. Release Recommendation
+10. Reflection
+11. Automation Proposal
+12. Appendix: Test Case Log
+
+---
+
+## Evaluation Rubric
+
+| Dimension | Weight | Exceeds Expectations | Meets Expectations | Below Expectations |
+|---|---:|---|---|---|
+| Strategy | 20% | Uses a mature risk-based strategy with clear scope, assumptions, traceability, measurable gates, and AI-specific risk prioritization. | Provides a coherent plan with reasonable scope and basic risk coverage. | Lists generic test types without a defensible strategy or release gates. |
+| Functional and API Testing | 15% | Covers workflows, contracts, failure handling, data flow, and integration boundaries with deterministic oracles. | Covers core happy paths and some edge cases. | Focuses mostly on UI or manual checks without meaningful assertions. |
+| Non-Functional Testing | 15% | Defines P95/P99 latency, TTFT, TPOT, tokens/sec, throughput, cost, error rate, and degradation thresholds. | Includes latency and basic performance considerations. | Uses vague statements such as "system should be fast" without metrics. |
+| AI Output Quality | 20% | Applies semantic similarity, faithfulness, hallucination scoring, repeated runs, confidence intervals, and LLM-as-a-judge with calibration. | Identifies hallucination and factual accuracy with some evaluation method. | Treats model output as simple pass/fail without accounting for variability. |
+| Safety, Bias, and Red Teaming | 10% | Includes modern red team categories, prompt injection, sycophancy, privacy, harmful code, copyright, and multi-turn attacks. | Covers basic safety and bias tests. | Omits safety or treats it as generic content moderation. |
+| Defect Analysis and RCA | 10% | Provides severity taxonomy, risk matrix, RCA framework, mitigations, release impact, and validation plan. | Provides prioritized defects and basic recommendations. | Reports issues without impact, root cause, or actionable next steps. |
+| Communication | 10% | Professional, concise, structured, and ready for leadership review. | Generally clear and organized. | Hard to follow, overly verbose, or missing key artifacts. |
+
+---
+
+## Mindset Differentiator
+
+A traditional QA response usually focuses on scripted checks, exact expected results, and pass/fail validation.
+
+A true AI Quality Engineering response shows how to evaluate a system whose outputs are variable, context-sensitive, and risk-bearing. It combines deterministic controls around the software system with probabilistic evaluation of the model behavior, and it explains how quality signals become release decisions.
+
+Strong candidates will show judgment in the gray areas: how much variation is acceptable, when human review is needed, how to calibrate model-based evaluation, and how to communicate residual risk.
+
+---
+
+## Submission Instructions
+
+Submit one standalone Markdown or PDF document. Include any assumptions, sample prompts, scoring rubrics, and evidence needed to make the assessment reproducible.
+
+Do not spend time building a full automation framework. A concise design and a few representative examples are sufficient within the 3 to 4 hour timebox.
+
+Your final answer should be suitable for review by Quality Engineering, Product, and Engineering leadership.

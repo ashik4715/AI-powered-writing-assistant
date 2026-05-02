@@ -1,9 +1,26 @@
-import { api } from '@/lib/api'
 import axios from 'axios'
 import { toast } from 'sonner'
 
 // Mock axios and sonner
-jest.mock('axios')
+const mockApiClient = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  patch: jest.fn(),
+  delete: jest.fn(),
+  interceptors: {
+    request: { use: jest.fn() },
+    response: { use: jest.fn() },
+  },
+}
+
+jest.mock('axios', () => ({
+  __esModule: true,
+  default: {
+    create: jest.fn(() => mockApiClient),
+  },
+}))
+
 jest.mock('sonner', () => ({
   toast: {
     error: jest.fn()
@@ -11,18 +28,19 @@ jest.mock('sonner', () => ({
 }))
 
 const mockedAxios = axios as jest.Mocked<typeof axios>
+const { api } = require('@/lib/api')
 
 describe('API Client', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    mockedAxios.create.mockClear()
+    mockApiClient.get.mockReset()
+    mockApiClient.post.mockReset()
+    ;(toast.error as jest.Mock).mockClear()
   })
 
   it('makes GET request successfully', async () => {
     const mockData = { id: 1, name: 'Test' }
-    mockedAxios.create.mockReturnValue({
-      get: jest.fn().mockResolvedValue({ data: mockData }),
-      interceptors: { request: { use: jest.fn() }, response: { use: jest.fn() } }
-    } as any)
+    mockApiClient.get.mockResolvedValue({ data: { success: true, data: mockData } })
 
     const result = await api.get('/test')
     expect(result).toEqual(mockData)
@@ -31,10 +49,7 @@ describe('API Client', () => {
   it('makes POST request successfully', async () => {
     const mockData = { id: 1 }
     const payload = { name: 'Test' }
-    mockedAxios.create.mockReturnValue({
-      post: jest.fn().mockResolvedValue({ data: mockData }),
-      interceptors: { request: { use: jest.fn() }, response: { use: jest.fn() } }
-    } as any)
+    mockApiClient.post.mockResolvedValue({ data: { success: true, data: mockData } })
 
     const result = await api.post('/test', payload)
     expect(result).toEqual(mockData)
@@ -42,16 +57,9 @@ describe('API Client', () => {
 
   it('shows toast on API error', async () => {
     const error = { response: { data: { message: 'Server error' }, status: 500, statusText: 'Internal Server Error' } }
-    mockedAxios.create.mockReturnValue({
-      interceptors: { 
-        request: { use: jest.fn() }, 
-        response: { use: jest.fn((onSuccess, onError) => {
-          // Simulate error interceptor
-          onError(error)
-        }) }
-      }
-    } as any)
+    const onError = mockApiClient.interceptors.response.use.mock.calls[0][1]
 
+    await expect(onError(error)).rejects.toEqual(error)
     expect(toast.error).toHaveBeenCalled()
   })
 

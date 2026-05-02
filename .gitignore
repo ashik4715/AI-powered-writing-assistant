@@ -10,7 +10,9 @@ yarn.lock
 dist/
 build/
 .next/
+.next*/
 out/
+*.tsbuildinfo
 
 # Environment variables
 .env

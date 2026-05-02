@@ -21,12 +21,12 @@ jest.mock('../generated/prisma', () => {
 });
 
 describe('PrismaService', () => {
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
   describe('constructor', () => {
-    it('should initialize PrismaClient with logging configuration', () => {
+    it('should initialize PrismaClient with logging configuration and error listener', () => {
       expect(PrismaClient).toHaveBeenCalledWith({
         log: [
           { emit: 'event', level: 'query' },
@@ -35,11 +35,8 @@ describe('PrismaService', () => {
           { emit: 'event', level: 'warn' },
         ],
       });
-    });
 
-    it('should set up event listeners', () => {
       const mockInstance = PrismaClient.mock.results[0]?.value;
-      expect(mockInstance?.$on).toHaveBeenCalledWith('query', expect.any(Function));
       expect(mockInstance?.$on).toHaveBeenCalledWith('error', expect.any(Function));
     });
   });

@@ -33,7 +33,7 @@ router.get('/pdf', async (req, res) => {
 
     // Generate HTML for PDF
     const html = generatePDFHTML(executions);
-    
+
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Content-Disposition', 'attachment; filename="test-results.html"');
     res.send(html);
@@ -67,7 +67,7 @@ router.get('/doc', async (req, res) => {
     });
 
     const html = generateDOCHTML(executions);
-    
+
     res.setHeader('Content-Type', 'application/msword');
     res.setHeader('Content-Disposition', 'attachment; filename="test-results.doc"');
     res.send(html);
@@ -101,7 +101,7 @@ router.get('/xls', async (req, res) => {
     });
 
     const html = generateXLSHTML(executions);
-    
+
     res.setHeader('Content-Type', 'application/vnd.ms-excel');
     res.setHeader('Content-Disposition', 'attachment; filename="test-results.xls"');
     res.send(html);
@@ -116,7 +116,7 @@ function generatePDFHTML(executions) {
   const passCount = executions.filter(e => e.verdict === 'pass').length;
   const failCount = executions.filter(e => e.verdict === 'fail').length;
   const partialCount = executions.filter(e => e.verdict === 'partial').length;
-  
+
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -125,24 +125,24 @@ function generatePDFHTML(executions) {
   <style>
     @page { size: A4; margin: 20mm; }
     body { font-family: 'Times New Roman', serif; font-size: 11pt; line-height: 1.6; color: #333; }
-    h1 { font-size: 24pt; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
-    h2 { font-size: 16pt; color: #34495e; margin-top: 30px; }
-    .summary { background: #ecf0f1; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    h1 { font-size: 20pt; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+    h2 { font-size: 16pt; color: #34495e; margin-top: 10px; }
+    .summary { background: #ecf0f1; padding: 5px; border-radius: 2px; margin: 5px 0; }
     .stat { display: inline-block; margin: 10px 20px; }
-    .stat-value { font-size: 28pt; font-weight: bold; color: #3498db; }
+    .stat-value { font-size: 20pt; font-weight: bold; color: #3498db; }
     .stat-label { font-size: 10pt; color: #7f8c8d; text-transform: uppercase; }
     .pass { color: #27ae60; }
     .fail { color: #e74c3c; }
     .partial { color: #f39c12; }
-    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 9pt; }
+    table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 9pt; }
     th { background: #34495e; color: white; padding: 10px; text-align: left; }
-    td { padding: 8px; border-bottom: 1px solid #bdc3c7; }
+    td { padding: 5px; border-bottom: 1px solid #bdc3c7; }
     tr:nth-child(even) { background: #f8f9fa; }
     .badge { padding: 3px 8px; border-radius: 3px; font-weight: bold; font-size: 8pt; }
     .badge-pass { background: #d5f4e6; color: #27ae60; }
     .badge-fail { background: #fadbd8; color: #e74c3c; }
     .badge-partial { background: #fef9e7; color: #f39c12; }
-    .critical { background: #ffebee; border-left: 4px solid #e74c3c; padding: 10px; margin: 10px 0; }
+    .critical { background: #ffebee; border-left: 2px solid #e74c3c; padding: 5px; margin: 5px 0; }
   </style>
 </head>
 <body>
@@ -241,9 +241,9 @@ function generateDOCHTML(executions) {
       <th>Notes</th>
     </tr>
     ${executions.map(exec => {
-      const metrics = JSON.parse(exec.metrics || '{}');
-      const score = Math.round(((metrics.relevanceScore || 0) + (metrics.coherenceScore || 0)) / 2 * 20);
-      return `
+    const metrics = JSON.parse(exec.metrics || '{}');
+    const score = Math.round(((metrics.relevanceScore || 0) + (metrics.coherenceScore || 0)) / 2 * 20);
+    return `
       <tr class="${exec.verdict}">
         <td>${exec.id}</td>
         <td>${exec.testCase.name}</td>
@@ -252,7 +252,7 @@ function generateDOCHTML(executions) {
         <td>${score}/100</td>
         <td>${exec.notes || ''}</td>
       </tr>`;
-    }).join('')}
+  }).join('')}
   </table>
 </body>
 </html>`;

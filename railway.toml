@@ -1,0 +1,26 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm install && npx prisma generate"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 100
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+[environments.production]
+numReplicas = 1
+
+[environments.production.deploy]
+startCommand = "npm start"
+
+[[services]]
+name = "ai-testing-backend"
+internal_port = 3001
+
+[services.healthcheck]
+path = "/api/health"
+interval = "10s"
+timeout = "5s"
+retries = 3

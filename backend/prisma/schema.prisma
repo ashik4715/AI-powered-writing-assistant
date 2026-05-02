@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../generated/prisma"
+  previewFeatures = ["driverAdapters"]
+  engineType      = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Starter models — replace with your own
+// Test Suites - Group of related test cases
+model TestSuite {
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(255)
+  description String?
+  category    String    @db.VarChar(50) // 'functional', 'non-functional', 'ai-quality'
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  testCases TestCase[]
+  
+  @@map("test_suites")
+}
+
+// Test Cases - Individual test definitions
+model TestCase {
+  id              String    @id @default(uuid())
+  suiteId         String    @map("suite_id")
+  name            String    @db.VarChar(255)
+  description     String?
+  prompt          String    @db.Text
+  expectedCriteria Json     // JSON structure for expected behavior
+  testType        String    @map("test_type") @db.VarChar(50) // 'happy-path', 'edge-case', 'performance', etc.
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  // Relations
+  suite          TestSuite  @relation(fields: [suiteId], references: [id], onDelete: Cascade)
+  testExecutions TestExecution[]
+  
+  @@map("test_cases")
+}
+
+// Test Executions - Results of running test cases
+model TestExecution {
+  id            String    @id @default(uuid())
+  testCaseId    String    @map("test_case_id")
+  status        String    @db.VarChar(20) // 'pending', 'running', 'passed', 'failed', 'error'
+  startedAt     DateTime  @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  durationMs    Int?      @map("duration_ms")
+  promptUsed    String    @db.Text @map("prompt_used")
+  aiResponse    String    @db.Text @map("ai_response")
+  metrics       Json?     // {response_time: 1500, token_count: 250, ...}
+  verdict       String?   @db.VarChar(20) // 'pass', 'fail', 'partial'
+  failureReason String?   @db.Text @map("failure_reason")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  testCase          TestCase          @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+  aiQualityMetrics  AiQualityMetric[]
+  performanceMetrics PerformanceMetric[]
+  
+  @@map("test_executions")
+}
+
+// AI Quality Metrics - Specific metrics for AI output quality
+model AiQualityMetric {
+  id                 String    @id @default(uuid())
+  executionId        String    @map("execution_id")
+  hallucinationScore Decimal?  @map("hallucination_score") @db.Decimal(3, 2) // 0-1 scale
+  relevanceScore     Decimal?  @map("relevance_score") @db.Decimal(3, 2) // 0-1 scale
+  coherenceScore     Decimal?  @map("coherence_score") @db.Decimal(3, 2) // 0-1 scale
+  factualAccuracy    Boolean?  @map("factual_accuracy")
+  safetyViolation    Boolean?  @map("safety_violation")
+  biasDetected       Boolean?  @map("bias_detected")
+  metrics            Json?     // Additional metrics
+  createdAt          DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  execution TestExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  
+  @@map("ai_quality_metrics")
+}
+
+// Performance Metrics - Timing and performance data
+model PerformanceMetric {
+  id                   String    @id @default(uuid())
+  executionId          String    @map("execution_id")
+  responseTimeMs       Int       @map("response_time_ms")
+  tokensPerSecond      Decimal?  @map("tokens_per_second") @db.Decimal(8, 2)
+  timeToFirstTokenMs   Int?      @map("time_to_first_token_ms")
+  modelLatencyMs       Int?      @map("model_latency_ms")
+  networkLatencyMs     Int?      @map("network_latency_ms")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  execution TestExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  
+  @@map("performance_metrics")
+}
+
+// User model for future authentication
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique @db.VarChar(255)
+  name      String?   @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  role      String    @default("user") @db.VarChar(50)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  
+  @@map("users")
+}
